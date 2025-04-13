@@ -1,0 +1,61 @@
+import yfinance as yf
+
+portfolio = {}
+
+def add_stock(symbol, shares):
+    symbol = symbol.upper()
+    if symbol in portfolio:
+        portfolio[symbol] += shares
+    else:
+        portfolio[symbol] = shares
+    print(f"✅ Added {shares} shares of {symbol} to portfolio.\n")
+
+def remove_stock(symbol):
+    symbol = symbol.upper()
+    if symbol in portfolio:
+        del portfolio[symbol]
+        print(f"❌ Removed {symbol} from portfolio.\n")
+    else:
+        print(f"⚠️ Stock {symbol} not found in portfolio.\n")
+
+def view_portfolio():
+    if not portfolio:
+        print("📭 Your portfolio is empty.\n")
+        return
+
+    print("\n📊 Current Portfolio:")
+    total_value = 0
+    for symbol, shares in portfolio.items():
+        stock = yf.Ticker(symbol)
+        price = stock.history(period="1d")['Close'][-1]
+        value = shares * price
+        total_value += value
+        print(f"{symbol}: {shares} shares × ${price:.2f} = ${value:.2f}")
+
+    print(f"\n💰 Total Portfolio Value: ${total_value:.2f}\n")
+
+def main():
+    while True:
+        print("1. Add Stock")
+        print("2. Remove Stock")
+        print("3. View Portfolio")
+        print("4. Exit")
+        choice = input("Enter your choice (1-4): ")
+
+        if choice == '1':
+            symbol = input("Enter stock symbol: ")
+            shares = int(input("Enter number of shares: "))
+            add_stock(symbol, shares)
+        elif choice == '2':
+            symbol = input("Enter stock symbol to remove: ")
+            remove_stock(symbol)
+        elif choice == '3':
+            view_portfolio()
+        elif choice == '4':
+            print("👋 Exiting Stock Portfolio Tracker.")
+            break
+        else:
+            print("Invalid choice. Please enter 1-4.\n")
+
+if __name__ == "__main__":
+    main()
